@@ -46,3 +46,30 @@ while ($arItemsBasket = $dbBasketItems->Fetch()) {
     }
 }
 
+$arFilter = Array('IBLOCK_ID'=>$arResult['IBLOCK_ID'], 'GLOBAL_ACTIVE'=>'Y','SECTION_ID'=>0,);
+$db_list = CIBlockSection::GetList(Array(), $arFilter, true);
+while($ar_result = $db_list->GetNext())
+{
+    $arrayID[] = $ar_result['ID'];
+}
+//print_r($arrayID);
+/*Формируем массив */
+$arSelect = Array("ID", "IBLOCK_ID", "NAME", "PROPERTY_*");
+$arFilter = Array("IBLOCK_ID"=>$arResult['IBLOCK_ID'], "SECTION_ID"=>$arrayID,"INCLUDE_SUBSECTIONS" => "Y");
+$res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
+
+while($ob = $res->GetNext()){
+
+
+    $iblockElementId=$ob['ID'];
+
+    $iblocid=$arResult['IBLOCK_ID'];
+
+    $ipropElementTemplates = new \Bitrix\Iblock\InheritedProperty\ElementTemplates($iblocid, $iblockElementId);
+    $templates = $ipropElementTemplates->findTemplates();
+    $newTemplates = array(
+        'ELEMENT_META_TITLE' => "Купить {=this.property.Seasons} {=this.Name} по приятной цене в {=catalog.store.1.name}"
+    );
+    $ipropElementTemplates->set($newTemplates);}
+
+
